@@ -22,7 +22,12 @@ class EuropeanOption:
     def price(self, path: pd.DataFrame, rfr: float) -> float:
         """Abstract method"""
         raise NotImplementedError("Pricing needs to be implemented in child classes")
-
+class EuropeanPutOption(EuropeanOption):
+    def payoff(self, path: pd.DataFrame) -> np.ndarray:
+        return np.maximum(0.0, self.strike_price - path.iloc[-1, :] )
+    def price(self, path: pd.DataFrame, rfr: float) -> np.ndarray:
+        return np.exp(-self.expiry * rfr) * self.payoff(path=path).mean()
+    
 
 class EuropeanCallOption(EuropeanOption):
     """Child class implementing call option protocol"""
